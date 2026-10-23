@@ -19,7 +19,7 @@ float noise(vec2 p) {
   vec2 u = f * f * (3. - 2. * f);
   return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
 }
-float fbm(vec2 p) { float s = 0., a = .5; for (int i = 0; i < 4; i++) { s += a * noise(p); p *= 2.03; a *= .5; } return s; }
+float fbm(vec2 p) { float s = 0., a = .5; for (int i = 0; i < OCT; i++) { s += a * noise(p); p *= 2.03; a *= .5; } return s; }
 
 // the sheet: deckled edges top and bottom
 float sheet(vec2 p) {
@@ -81,7 +81,8 @@ export class Press {
       new THREE.PlaneGeometry(1, 1),
       new THREE.ShaderMaterial({
         vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * 2., 0., 1.); }',
-        fragmentShader: FRAG,
+        // phones: two noise octaves instead of four; the paper looks the same at that size
+        fragmentShader: '#define OCT ' + (S.mobile ? 2 : 4) + String.fromCharCode(10) + FRAG,
         uniforms: this.u,
         transparent: true,
       }),

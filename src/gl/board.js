@@ -78,7 +78,7 @@ function panel(i, svc, W, H, mobile) {
     ctx.font = `300 ${size}px ${DISPLAY}`;
   }
   ctx.textBaseline = 'alphabetic';
-  const titleY = mobile ? H * 0.42 : H - pad - u * 2;
+  const titleY = mobile ? H * 0.36 : H - pad - u * 2;
   ctx.fillText(svc.title, pad - size * 0.04, titleY);
 
   ctx.fillStyle = fg2;

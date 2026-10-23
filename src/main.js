@@ -50,7 +50,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
 // phones: scroll is computed in the same frame as the WebGL, so type drawn in the canvas never trails the page
 const touchScroll = matchMedia('(hover: none), (pointer: coarse)').matches;
-const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false, syncTouch: touchScroll, syncTouchLerp: 0.09, touchInertiaExponent: 1.7 });
+const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false, syncTouch: touchScroll, syncTouchLerp: 0.16 });
 window.__lenis = lenis;
 lenis.stop();
 
@@ -235,12 +235,13 @@ async function boot() {
       cards.forEach((c, i) => {
         const arrive = i === 0 ? 1 : easeInOut(clamp(t - (i - 1)));
         const buried = clamp(t - i, 0, 2);
-        const y = (1 - arrive) * vh * 1.1 - buried * 26;
+        // phones: the cards underneath peek out just a little, well clear of the title
+        const y = (1 - arrive) * vh * 1.1 - buried * (S?.mobile ? 12 : 26);
         const rx = buried * 5 - (1 - arrive) * 14;
         const s = 1 - buried * 0.05;
         c.style.transform = `perspective(1400px) translate3d(0, ${y.toFixed(1)}px, 0) rotateX(${rx.toFixed(2)}deg) scale(${s.toFixed(4)})`;
         c.style.filter = `brightness(${(1 - buried * 0.3).toFixed(3)})`;
-        c.style.visibility = arrive < 0.001 || buried >= 2 ? 'hidden' : 'visible';
+        c.style.visibility = arrive < 0.001 ? 'hidden' : 'visible';
         c.style.zIndex = i;
       });
     }
