@@ -216,7 +216,8 @@ export class Card {
     this.camera.aspect = r.width / r.height;
     this.camera.updateProjectionMatrix();
     const fit = Math.min(1, (r.width / r.height) / 1.25);
-    this.camera.position.z = 9 / Math.max(0.55, fit);
+    // phones: come closer so the card fills the width of the screen
+    this.camera.position.z = (9 / Math.max(0.55, fit)) * (this.S.mobile ? 0.62 : 1);
 
     if (!this.seen && r.top < S.h * 0.7) {
       this.seen = true;

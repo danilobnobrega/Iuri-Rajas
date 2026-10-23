@@ -66,12 +66,18 @@ export function createGL(canvas) {
   };
 
   S.resize = () => {
-    S.w = window.innerWidth;
-    S.h = window.innerHeight;
+    const w = window.innerWidth,
+      h = window.innerHeight;
+    // phones: the address bar grows and shrinks while scrolling; keep the canvas at the
+    // tallest height seen for this width so nothing on the GPU is reallocated mid-scroll
+    if (S.touch && w === S.w && h <= S.h && S.h - h < 220) return;
+    const sameW = w === S.w;
+    S.w = w;
+    S.h = S.touch && sameW ? Math.max(h, S.h || 0) : h;
     S.mobile = S.w <= 820;
     S.dpr = Math.min(window.devicePixelRatio || 1, S.mobile ? 2 : 1.75);
     renderer.setPixelRatio(S.dpr);
-    renderer.setSize(S.w, S.h, false);
+    renderer.setSize(S.w, S.h, true);
     S.views.forEach((v) => v.resize?.());
   };
 
