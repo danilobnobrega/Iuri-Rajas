@@ -144,7 +144,8 @@ export class Journey {
     this.camera.position.set(camX, 2.4 - this.ty * 0.35 + camZ * 0.05, camZ);
     this.scene.fog.near = camZ * 1.05;
     this.scene.fog.far = camZ * 2.3;
-    this.camera.lookAt(focus + (mobile ? 0 : 2.4), mobile ? 2.2 : 1.8, 0);
+    // phones: the year sits higher, leaving the lower half of the screen to its text
+    this.camera.lookAt(focus + (mobile ? 0 : 2.4), mobile ? 0.6 : 1.8, 0);
 
     // the spotlight follows the pointer across the type
     const lx = focus + this.tx * 4;
@@ -161,7 +162,9 @@ export class Journey {
       else this.anchor.set(k * GAP + it.w * 0.5 + 0.9, 3.1, 0);
       this.anchor.project(this.camera);
       const x = (this.anchor.x * 0.5 + 0.5) * r.width;
-      const y = (-this.anchor.y * 0.5 + 0.5) * r.height;
+      let y = (-this.anchor.y * 0.5 + 0.5) * r.height;
+      // never let the text run off the bottom of the screen
+      if (mobile) y = Math.min(y, r.height - el.offsetHeight - 28);
       el.style.opacity = vis.toFixed(3);
       el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translateY(${((1 - vis) * 24).toFixed(1)}px)`;
     });

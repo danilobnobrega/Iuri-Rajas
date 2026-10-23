@@ -64,7 +64,7 @@ function panel(i, svc, W, H, mobile) {
   const u = H / 100;
 
   ctx.fillStyle = fg2;
-  ctx.font = `500 ${Math.round(u * (mobile ? 2.4 : 3))}px ${SANS}`;
+  ctx.font = `500 ${Math.round(u * (mobile ? 3.6 : 3))}px ${SANS}`;
   if ('letterSpacing' in ctx) ctx.letterSpacing = `${Math.round(u * 0.5)}px`;
   ctx.textBaseline = 'top';
   ctx.fillText(`0${i + 1}`, pad, pad);
@@ -83,7 +83,7 @@ function panel(i, svc, W, H, mobile) {
 
   ctx.fillStyle = fg2;
   if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
-  const bs = Math.round(u * (mobile ? 3.4 : 3.3));
+  const bs = Math.round(u * (mobile ? 5.6 : 3.3));
   ctx.font = `400 ${bs}px ${SANS}`;
   const colW = mobile ? W - pad * 2 : W * 0.34;
   const lines = wrap(ctx, svc.text, colW);

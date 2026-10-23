@@ -224,7 +224,7 @@ export class Hero {
     const visW = visH * aspect;
     this.visH = visH;
     // the portrait stands on the bottom edge; on narrow screens it fills the width
-    const size = Math.min(visH * 0.9, visW * (this.S.mobile ? 1.55 : 1.18));
+    const size = Math.min(visH * 0.9, visW * (this.S.mobile ? 1.22 : 1.18));
     this.photoSize = size;
     this.photo.scale.set(size, size, 1);
     this.photoY = -visH / 2 + size / 2;

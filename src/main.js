@@ -48,7 +48,9 @@ const CONTACT = {
 /* ───────────── scroll ───────────── */
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
-const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false });
+// phones: scroll is computed in the same frame as the WebGL, so type drawn in the canvas never trails the page
+const touchScroll = matchMedia('(hover: none), (pointer: coarse)').matches;
+const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false, syncTouch: touchScroll, syncTouchLerp: 0.09, touchInertiaExponent: 1.7 });
 window.__lenis = lenis;
 lenis.stop();
 
