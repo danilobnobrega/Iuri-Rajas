@@ -19,6 +19,32 @@ const CONTACT = {
   email: 'iuriojeda@gmail.com',
 };
 
+
+/* ───────────── diagnostics: phones on the live site report to the project's logs ───────────── */
+{
+  const lines = [];
+  const t0 = performance.now();
+  const log = (s) => lines.push(((performance.now() - t0) / 1000).toFixed(1) + 's ' + s);
+  window.__dbg = log;
+  log(navigator.userAgent);
+  addEventListener('error', (e) => log('ERR ' + e.message + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno));
+  addEventListener('unhandledrejection', (e) => log('REJ ' + (e.reason?.message || e.reason)));
+  if (matchMedia('(hover: none), (pointer: coarse)').matches && !/localhost|192\.168/.test(location.host)) {
+    const id = Math.random().toString(36).slice(2, 8);
+    const send = (tag) => {
+      try {
+        navigator.sendBeacon('/api/diag', new Blob([JSON.stringify({ id, tag, lines: lines.slice(-80) })], { type: 'text/plain' }));
+      } catch (e) {}
+    };
+    setTimeout(() => send('4s'), 4000);
+    setInterval(() => {
+      log(`y ${Math.round(scrollY)} · fps ${Math.round(1 / Math.max(window.__S?.dt || 0.016, 1e-3))}`);
+      send('beat');
+    }, 6000);
+    addEventListener('pagehide', () => send('hide'));
+  }
+}
+
 /* ───────────── scroll ───────────── */
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
@@ -91,6 +117,8 @@ async function boot() {
   let S = null;
   try {
     S = createGL($('#gl'));
+    window.__S = S;
+    $('#gl').addEventListener('webglcontextlost', () => window.__dbg('WEBGL CONTEXT LOST'));
     root.classList.add('gl');
   } catch {
     root.classList.add('no-gl');
