@@ -50,7 +50,8 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
 // phones: scroll is computed in the same frame as the WebGL, so type drawn in the canvas never trails the page
 const touchScroll = matchMedia('(hover: none), (pointer: coarse)').matches;
-const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false, syncTouch: touchScroll, syncTouchLerp: 0.16 });
+// phones keep the native scroll, finger to page 1:1
+const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95, autoRaf: false });
 window.__lenis = lenis;
 lenis.stop();
 
@@ -145,7 +146,23 @@ async function boot() {
     journey = S.add(new Journey(S, $('[data-view="journey"]'), $$('[data-mile]'), $('[data-journey]'), '/fonts/fraunces-latin-400-normal.woff'));
     const services = $$('[data-service]').map((li) => ({ title: li.dataset.title, text: li.dataset.text }));
     board = S.add(new Board(S, $('[data-view="board"]'), services));
-    S.add(new Press(S, $('[data-view="press"]'), $('[data-press-section]')));
+    // the certifications scroll with the page (they are not pinned), so on a phone the paper is
+    // printed in the page itself: native scrolling can never leave it a frame behind
+    if (!touchScroll) S.add(new Press(S, $('[data-view="press"]'), $('[data-press-section]')));
+    else {
+      root.classList.add('press-dom');
+      // a torn edge, drawn once as an svg mask
+      let d = 'M0 30 ';
+      for (let x = 0; x <= 400; x += 3) d += `L${x} ${(14 + Math.sin(x * 0.07) * 2.2 + Math.sin(x * 0.31 + 1) * 1.1 + Math.random() * 1.4).toFixed(1)} `;
+      d += 'L400 30 Z';
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 30' preserveAspectRatio='none'><path d='${d}'/></svg>`;
+      const top = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+      const bot = `url("data:image/svg+xml,${encodeURIComponent(svg.replace('<path', "<path transform='matrix(1 0 0 -1 0 30)'"))}")`;
+      const sec = $('[data-press-section]');
+      const mask = `${top} top / 100% 30px no-repeat, linear-gradient(#000, #000) center / 100% calc(100% - 58px) no-repeat, ${bot} bottom / 100% 30px no-repeat`;
+      sec.style.webkitMask = mask;
+      sec.style.mask = mask;
+    }
     S.add(new Card(S, $('[data-view="card"]'), CONTACT));
     await track(journey.ready, 0.3);
     addEventListener('resize', () => S.resize());
