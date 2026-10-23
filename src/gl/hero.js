@@ -16,7 +16,7 @@ void main() {
   // soften the matte so the edge reads as focus fall-off, not scissors
   // pull the matte in a touch: the outermost pixels still carry the bright window behind him
   float a = mix(t.a, texture2D(uTex, vUv, 1.6).a, .5);
-  a = smoothstep(.3, .97, a);
+  a = smoothstep(.12, .92, a);
 
   // grade it into the scene: less saturation, deeper mids, the white shirt pulled down
   vec3 c = t.rgb;
